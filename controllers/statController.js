@@ -1,111 +1,42 @@
-const Coupon = require('../models/coupon');
-const Question = require('../models/question');
 const Rating = require('../models/rating');
-const { HTTP_STATUS_CODE } = require('../utils/constants');
+const Question = require('../models/question');
+const Survey = require('../models/survey');
+const { HTTP_STATUS_CODE } = require('../utils/httpStatus');
 const { Op } = require('sequelize');
 const { validationResult } = require('express-validator');
 
-const getQuestionStats = async (req, res) => {
-    try {
-        const { couponId } = req.params;
+const getTotalRatingByQuestionId = async (req, res) => {
+  try {
+    const { questionId } = req.params;
 
-        // Check if the coupon exists
-        const coupon = await Coupon.findByPk(couponId, {
-            include: [Question],
-        });
+    const isQuestionExist = await Question.findByPk(questionId);
 
-        if (!coupon) {
-            return res
-                .status(HTTP_STATUS_CODE.NOT_FOUND)
-                .json({ message: 'Coupon not found' });
-        }
-
-        const questionIds = Array.from(coupon.Questions, ({ id }) => id);
-
-        // Get average rating for each question
-        const stats = await Promise.all(
-            questionIds.map(async (questionId) => {
-                const ratings = await Rating.findAll({
-                    where: { questionId },
-                });
-
-                const averageRating =
-                    ratings.reduce((sum, rating) => sum + rating.rating, 0) /
-                    ratings.length;
-
-                return {
-                    questionId,
-                    averageRating: isNaN(averageRating) ? 0 : averageRating,
-                    totalRatings: ratings.length,
-                };
-            })
-        );
-
-        res.status(HTTP_STATUS_CODE.OK).json({
-            message: 'Statistics retrieved successfully',
-            stats,
-        });
-    } catch (error) {
-        console.error('Error getting statistics:', error);
-        res.status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR).json({
-            message: 'Error getting statistics',
-        });
+    if (!isQuestionExist) {
+      return res
+        .status(HTTP_STATUS_CODE.BAD_REQUEST)
+        .json({ message: 'Question not found' });
     }
+
+    // Fetch all ratings for the given questionId
+    const ratings = await Rating.findAll({
+      where: { questionId: questionId },
+    });
+
+    // Calculate totalRating (sum of all ratings)
+    const totalRating = ratings.reduce((sum, record) => sum + record.rating, 0);
+
+    return res.status(HTTP_STATUS_CODE.OK).json({
+      message: 'Ratings fetched successfully',
+      totalRating,
+      data: ratings,
+    });
+  } catch (error) {
+    res.status(HTTP_STATUS_CODE.INTERNAL_SERVER).json({
+      message: 'Error fetching total ratings',
+      error: error.message,
+    });
+  }
 };
-
-const getQuestionStatsByDateRange = async (req, res) => {
-    try {
-        const { startDate, endDate, couponId } = req.query;
-
-        // Check if the coupon exists
-        const coupon = await Coupon.findByPk(couponId, {
-            include: [Question],
-        });
-
-        if (!coupon) {
-            return res
-                .status(HTTP_STATUS_CODE.NOT_FOUND)
-                .json({ message: 'Coupon not found' });
-        }
-
-        const questionIds = Array.from(coupon.Questions, ({ id }) => id);
-
-        // Get average rating for each question within the date range
-        const stats = await Promise.all(
-            questionIds.map(async (questionId) => {
-                const ratings = await Rating.findAll({
-                    where: {
-                        questionId,
-                        createdAt: {
-                            [Op.between]: [startDate, endDate],
-                        },
-                    },
-                });
-
-                const averageRating =
-                    ratings.reduce((sum, rating) => sum + rating.rating, 0) /
-                    ratings.length;
-
-                return {
-                    questionId,
-                    averageRating: isNaN(averageRating) ? 0 : averageRating,
-                    totalRatings: ratings.length,
-                };
-            })
-        );
-
-        res.status(HTTP_STATUS_CODE.OK).json({
-            message: 'Statistics retrieved successfully',
-            stats,
-        });
-    } catch (error) {
-        console.error('Error getting statistics:', error);
-        res.status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR).json({
-            message: 'Error getting statistics',
-        });
-    }
-};
-
 const getTotalRatingsForQuestions = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -115,20 +46,20 @@ const getTotalRatingsForQuestions = async (req, res) => {
   }
 
   try {
-    const { couponId } = req.params;
+    const { surveyId } = req.params;
 
-    // Check if the coupon exists
-    const coupon = await Coupon.findByPk(couponId, {
+    // Check if the survey exists
+    const survey = await Survey.findByPk(surveyId, {
       include: Question, // Include associated questions
     });
 
-    if (!coupon) {
+    if (!survey) {
       return res
         .status(HTTP_STATUS_CODE.BAD_REQUEST)
-        .json({ message: 'Coupon not found' });
+        .json({ message: 'Survey not found' });
     }
 
-    const questionIds = Array.from(coupon.Questions, ({ id }) => id);
+    const questionIds = Array.from(survey.Questions, ({ id }) => id);
 
     if (!Array.isArray(questionIds) || questionIds.length === 0) {
       return res
@@ -178,20 +109,20 @@ const getRatingsByDateRange = async (req, res) => {
   }
 
   try {
-    const { startDate, endDate, couponId } = req.query;
+    const { startDate, endDate, surveyId } = req.query;
 
-    // Check if the coupon exists
-    const coupon = await Coupon.findByPk(couponId, {
+    // Check if the survey exists
+    const survey = await Survey.findByPk(surveyId, {
       include: Question, // Include associated questions
     });
 
-    if (!coupon) {
+    if (!survey) {
       return res
         .status(HTTP_STATUS_CODE.BAD_REQUEST)
-        .json({ message: 'Coupon not found' });
+        .json({ message: 'Survey not found' });
     }
 
-    const questionIds = Array.from(coupon.Questions, ({ id }) => id);
+    const questionIds = Array.from(survey.Questions, ({ id }) => id);
 
     const ratings = await Rating.findAll({
       where: {
@@ -231,8 +162,7 @@ const getRatingsByDateRange = async (req, res) => {
 };
 
 module.exports = {
-  getQuestionStats,
-  getQuestionStatsByDateRange,
+  getTotalRatingByQuestionId,
   getTotalRatingsForQuestions,
   getRatingsByDateRange,
 };

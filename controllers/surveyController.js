@@ -1,44 +1,43 @@
-const Coupon = require('../models/coupon');
-const { HTTP_STATUS_CODE } = require('../utils/constants');
+const Survey = require('../models/survey');
+const { validationResult } = require('express-validator');
+const { HTTP_STATUS_CODE } = require('../utils/httpStatus');
 
-const saveCoupon = async (req, res) => {
-    try {
-        const { name, heading, code, discount, expiryDate } = req.body;
+const saveSurvey = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res
+      .status(HTTP_STATUS_CODE.BAD_REQUEST)
+      .json({ errors: errors.array() });
+  }
 
-        const newCoupon = await Coupon.create({
-            name,
-            heading,
-            code,
-            discount,
-            expiryDate,
-        });
+  try {
+    const { name, heading } = req.body;
 
-        res.status(HTTP_STATUS_CODE.CREATED).json({
-            message: 'Coupon created successfully',
-            coupon: newCoupon,
-        });
-    } catch (error) {
-        console.error('Error creating coupon:', error);
-        res.status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR).json({
-            message: 'Error creating coupon',
-        });
-    }
+    const newSurvey = await Survey.create({ name, heading });
+    res.status(HTTP_STATUS_CODE.CREATED).json({
+      message: 'Survey created successfully',
+      survey: newSurvey,
+    });
+  } catch (error) {
+    res.status(HTTP_STATUS_CODE.INTERNAL_SERVER).json({
+      message: 'Error creating survey',
+      error: error.message,
+    });
+  }
+};
+const getAllSurveys = async (req, res) => {
+  try {
+    const surveys = await Survey.findAll();
+    res.status(HTTP_STATUS_CODE.OK).json({
+      message: 'Surveys retrieved successfully',
+      surveys,
+    });
+  } catch (error) {
+    res.status(HTTP_STATUS_CODE.INTERNAL_SERVER).json({
+      message: 'Error retrieving surveys',
+      error: error.message,
+    });
+  }
 };
 
-const getAllCoupons = async (req, res) => {
-    try {
-        const coupons = await Coupon.findAll();
-
-        res.status(HTTP_STATUS_CODE.OK).json({
-            message: 'Coupons retrieved successfully',
-            coupons,
-        });
-    } catch (error) {
-        console.error('Error retrieving coupons:', error);
-        res.status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR).json({
-            message: 'Error retrieving coupons',
-        });
-    }
-};
-
-module.exports = { saveCoupon, getAllCoupons };
+module.exports = { saveSurvey, getAllSurveys };

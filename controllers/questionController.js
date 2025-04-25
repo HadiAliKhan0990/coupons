@@ -1,9 +1,9 @@
-const Coupon = require('../models/coupon');
 const Question = require('../models/question');
-const { HTTP_STATUS_CODE } = require('../utils/constants');
+const Survey = require('../models/survey');
+const { HTTP_STATUS_CODE } = require('../utils/httpStatus');
 const { validationResult } = require('express-validator');
 
-const getQuestionsForCoupon = async (req, res) => {
+const getQuestionsForSurvey = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res
@@ -12,29 +12,29 @@ const getQuestionsForCoupon = async (req, res) => {
   }
 
   try {
-    const { couponId } = req.params;
+    const { surveyId } = req.params;
 
-    // Check if the coupon exists
-    const coupon = await Coupon.findByPk(couponId, {
-      include: [Question],
+    // Check if the survey exists
+    const survey = await Survey.findByPk(surveyId, {
+      include: Question, // Include associated questions
     });
 
-    if (!coupon) {
+    if (!survey) {
       return res
         .status(HTTP_STATUS_CODE.NOT_FOUND)
-        .json({ message: 'Coupon not found' });
+        .json({ message: 'Survey not found' });
     }
 
-    res.status(HTTP_STATUS_CODE.OK).json({ questions: coupon.Questions }); // Send questions in response
+    res.status(HTTP_STATUS_CODE.OK).json({ questions: survey.Questions }); // Send questions in response
   } catch (error) {
-    console.error('Error getting questions:', error);
-    res.status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR).json({
-      message: 'Error getting questions',
-    });
+    console.error('Error fetching questions:', error);
+    res
+      .status(HTTP_STATUS_CODE.INTERNAL_SERVER)
+      .json({ message: 'Internal server error' });
   }
 };
 
-const createQuestionForCoupon = async (req, res) => {
+const createQuestionForSurvey = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res
@@ -43,35 +43,31 @@ const createQuestionForCoupon = async (req, res) => {
   }
 
   try {
-    const { question, type } = req.body;
-    const { couponId } = req.params;
+    const { surveyId } = req.params;
+    const { text } = req.body;
 
-    // Check if the coupon exists
-    const coupon = await Coupon.findByPk(couponId);
-    if (!coupon) {
+    // Check if the survey exists
+    const survey = await Survey.findByPk(surveyId);
+    if (!survey) {
       return res
         .status(HTTP_STATUS_CODE.NOT_FOUND)
-        .json({ message: 'Coupon not found' });
+        .json({ message: 'Survey not found' });
     }
 
     // Create the question
-    const newQuestion = await Question.create({
-      question,
-      type,
-    });
+    const question = await Question.create({ text });
 
-    // Associate the question with the coupon
-    await coupon.addQuestion(newQuestion);
+    // Associate the question with the survey
+    await survey.addQuestion(question);
 
-    res.status(HTTP_STATUS_CODE.CREATED).json({
-      message: 'Question created successfully',
-      question: newQuestion,
-    });
+    res
+      .status(HTTP_STATUS_CODE.CREATED)
+      .json({ message: 'Question added successfully', question });
   } catch (error) {
     console.error('Error creating question:', error);
-    res.status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR).json({
-      message: 'Error creating question',
-    });
+    res
+      .status(HTTP_STATUS_CODE.INTERNAL_SERVER)
+      .json({ message: 'Internal server error' });
   }
 };
 
@@ -111,8 +107,10 @@ const updateQuestion = async (req, res) => {
   }
 };
 
+module.exports = { updateQuestion };
+
 module.exports = {
-  createQuestionForCoupon,
-  getQuestionsForCoupon,
+  createQuestionForSurvey,
+  getQuestionsForSurvey,
   updateQuestion,
 };

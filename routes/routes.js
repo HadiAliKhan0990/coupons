@@ -4,7 +4,6 @@ const surveyRoutes = require('./surveyRoutes');
 const questionRoutes = require('./questionRoutes');
 const ratingRoutes = require('./ratingRoutes');
 const statRoutes = require('./statRoutes');
-const couponRoutes = require('./couponRoutes');
 
 const express = require('express');
 
@@ -32,8 +31,6 @@ app.use('/api/question', authMiddleware, questionRoutes);
 app.use('/api/rating', authMiddleware, ratingRoutes);
 
 app.use('/api/stat', authMiddleware, statRoutes);
-
-app.use('/api/coupon', authMiddleware, couponRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 3000;

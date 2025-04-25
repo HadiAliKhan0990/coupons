@@ -1,13 +1,13 @@
-const Coupon = require('./coupon');
+const Survey = require('./survey');
 const Question = require('./question');
 const { Association } = require('sequelize');
 const Rating = require('./rating');
 const User = require('./user');
 
 const defineAssociations = () => {
-  // coupon and question relationship
-  Coupon.belongsToMany(Question, { through: 'CouponQuestion' });
-  Question.belongsToMany(Coupon, { through: 'CouponQuestion' });
+  // survey and question relationship
+  Survey.belongsToMany(Question, { through: 'SurveyQuestion' });
+  Question.belongsToMany(Survey, { through: 'SurveyQuestion' });
 
   // Rating Model Association
   Rating.belongsTo(Question, { foreignKey: 'questionId', onDelete: 'CASCADE' });

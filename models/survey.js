@@ -1,37 +1,27 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../connection');
+const sequelize = require('../config/database');
 
-const Coupon = sequelize.define('Coupon', {
+const Survey = sequelize.define(
+  'Survey',
+  {
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
     },
     name: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     heading: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    code: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-    },
-    discount: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
-    },
-    expiryDate: {
-        type: DataTypes.DATE,
-        allowNull: false,
-    },
-    isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
-    },
-});
+  },
+  {
+    tableName: 'survey',
+    timestamps: true,
+  }
+);
 
-module.exports = Coupon;
+module.exports = Survey;
