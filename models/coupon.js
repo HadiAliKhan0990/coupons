@@ -11,22 +11,41 @@ const Coupon = sequelize.define('Coupon', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    heading: {
+    companyName: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    code: {
-        type: DataTypes.STRING,
+    couponType: {
+        type: DataTypes.ENUM('percentageDiscount', 'fixedDiscount', 'other'),
         allowNull: false,
-        unique: true,
     },
-    discount: {
-        type: DataTypes.DECIMAL(10, 2),
+    product: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
+    totalAvailable: {
+        type: DataTypes.INTEGER,
         allowNull: false,
+    },
+    claimedCount: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+    },
+    redeemedCount: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
     },
     expiryDate: {
         type: DataTypes.DATE,
         allowNull: false,
+    },
+    qrCode: {
+        type: DataTypes.STRING,
+        allowNull: true,
     },
     isActive: {
         type: DataTypes.BOOLEAN,

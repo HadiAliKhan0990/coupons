@@ -2,18 +2,18 @@ const { body } = require('express-validator');
 
 const couponValidations = [
   body('name').notEmpty().withMessage('Coupon name is required'),
-  body('heading').notEmpty().withMessage('Coupon heading is required'),
-  body('code').notEmpty().withMessage('Coupon code is required'),
-  body('discount')
-    .notEmpty()
-    .withMessage('Discount amount is required')
-    .isFloat({ min: 0, max: 100 })
-    .withMessage('Discount must be between 0 and 100'),
+  body('companyName').notEmpty().withMessage('Company name is required'),
+  body('couponType')
+    .notEmpty().withMessage('Coupon type is required')
+    .isIn(['percentageDiscount', 'fixedDiscount', 'other']).withMessage('Invalid coupon type'),
+  body('product').optional().isString().withMessage('Product must be a string'),
+  body('description').optional().isString().withMessage('Description must be a string'),
+  body('totalAvailable')
+    .notEmpty().withMessage('Total available is required')
+    .isInt({ min: 1 }).withMessage('Total available must be a positive integer'),
   body('expiryDate')
-    .notEmpty()
-    .withMessage('Expiry date is required')
-    .isISO8601()
-    .withMessage('Invalid date format'),
+    .notEmpty().withMessage('Expiry date is required')
+    .isISO8601().withMessage('Invalid date format'),
 ];
 
 module.exports = {
