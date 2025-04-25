@@ -6,19 +6,19 @@ const { authorizeMiddleware } = require('../middlewares/authorize');
 const roles = require('../utils/role');
 
 const {
-  getAllSurveys,
-  saveSurvey,
-} = require('../controllers/surveyController');
+  getAllCoupons,
+  saveCoupon,
+} = require('../controllers/couponController');
 
-const { surveyValidations } = require('../validations/survey');
+const { couponValidations } = require('../validations/coupon');
 
-router.get('/', authorizeMiddleware([roles.Admin]), getAllSurveys);
+router.get('/', authorizeMiddleware([roles.Admin]), getAllCoupons);
 
 router.post(
   '/',
   authorizeMiddleware([roles.Admin]),
-  surveyValidations,
-  saveSurvey
+  couponValidations,
+  saveCoupon
 );
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const { authMiddleware } = require('../middlewares/auth');
 const authRoutes = require('./authRoutes');
-const surveyRoutes = require('./surveyRoutes');
+const couponRoutes = require('./couponRoutes');
 const questionRoutes = require('./questionRoutes');
 const ratingRoutes = require('./ratingRoutes');
 const statRoutes = require('./statRoutes');
@@ -24,7 +24,7 @@ app.get('/api/', authMiddleware, (req, res) => {
 
 app.use('/api/auth', authRoutes);
 
-app.use('/api/survey', authMiddleware, surveyRoutes);
+app.use('/api/coupon', authMiddleware, couponRoutes);
 
 app.use('/api/question', authMiddleware, questionRoutes);
 

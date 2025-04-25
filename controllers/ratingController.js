@@ -32,10 +32,10 @@ const saveRating = async (req, res) => {
         .json({ message: 'User not found' });
     }
 
-    const newSurvey = await Rating.create({ questionId, userId, rating });
+    const newRating = await Rating.create({ questionId, userId, rating });
     res.status(HTTP_STATUS_CODE.CREATED).json({
       message: 'Rating created successfully',
-      survey: newSurvey,
+      rating: newRating,
     });
   } catch (error) {
     res.status(HTTP_STATUS_CODE.INTERNAL_SERVER).json({

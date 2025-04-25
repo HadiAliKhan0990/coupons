@@ -5,26 +5,26 @@ const { authorizeMiddleware } = require('../middlewares/authorize');
 const roles = require('../utils/role');
 
 const {
-  createQuestionForSurvey,
-  getQuestionsForSurvey,
+  createQuestionForCoupon,
+  getQuestionsForCoupon,
   updateQuestion,
 } = require('../controllers/questionController');
 
 const {
   questionValidations,
-  surveyIdValidations,
+  couponIdValidations,
   questionIdValidations,
 } = require('../validations/question');
 
 const router = express.Router();
 
-router.get('/:surveyId', surveyIdValidations, getQuestionsForSurvey);
+router.get('/:couponId', couponIdValidations, getQuestionsForCoupon);
 
 router.post(
-  '/:surveyId',
+  '/:couponId',
   authorizeMiddleware([roles.Admin]),
   questionValidations,
-  createQuestionForSurvey
+  createQuestionForCoupon
 );
 
 router.put(
