@@ -1,20 +1,20 @@
-const { body } = require('express-validator');
-const { param } = require('express-validator');
+const { body, param } = require('express-validator');
 
-const questionValidations = [
-  body('text').notEmpty().withMessage('question is required'),
+const couponIdValidations = [
+    param('couponId').notEmpty().withMessage('coupon is required'),
 ];
 
-const surveyIdValidations = [
-  param('surveyId').notEmpty().withMessage('question is required'),
+const questionValidations = [
+    body('question').notEmpty().withMessage('Question text is required'),
+    body('type').notEmpty().withMessage('Question type is required'),
 ];
 
 const questionIdValidations = [
-  param('questionId').notEmpty().withMessage('question is required'),
+    param('questionId').notEmpty().withMessage('question is required'),
 ];
 
 module.exports = {
-  questionValidations,
-  surveyIdValidations,
-  questionIdValidations,
+    questionValidations,
+    couponIdValidations,
+    questionIdValidations,
 };
