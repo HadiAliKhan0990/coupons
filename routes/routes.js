@@ -12,7 +12,7 @@ app.get('/api/test', (req, res) => {
   res.status(200).json({ message: 'API is working!' });
 });
 
-app.use('/api/coupon', authMiddleware, couponRoutes);
+app.use('/api/coupon', couponRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 3000;

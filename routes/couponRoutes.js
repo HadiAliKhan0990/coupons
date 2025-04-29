@@ -1,10 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-const { authorizeMiddleware } = require('../middlewares/authorize');
-
-const roles = require('../utils/role');
-
 const {
   createCoupon,
   getAllCoupons,
@@ -18,15 +14,15 @@ const {
 const { couponValidations } = require('../validations/coupon');
 
 // Create coupon
-router.post('/', authorizeMiddleware([roles.Admin]), couponValidations, createCoupon);
+router.post('/', couponValidations, createCoupon);
 // Get all coupons
 router.get('/', getAllCoupons);
 // Get single coupon
 router.get('/:id', getCoupon);
 // Update coupon
-router.put('/:id', authorizeMiddleware([roles.Admin]), couponValidations, updateCoupon);
+router.put('/:id', couponValidations, updateCoupon);
 // Delete coupon
-router.delete('/:id', authorizeMiddleware([roles.Admin]), deleteCoupon);
+router.delete('/:id', deleteCoupon);
 // Claim coupon
 router.post('/:id/claim', claimCoupon);
 // Redeem coupon

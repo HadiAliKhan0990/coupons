@@ -1,22 +1,22 @@
 {
   "development": {
     "username": "postgres",
-    "password": "postgresql",
-    "database": "coupon",
+    "password": "2343",
+    "database": "coupons",
     "host": "localhost",
     "dialect": "postgres"
   },
   "test": {
     "username": "postgres",
-    "password": "postgresql",
-    "database": "coupon",
+    "password": "2343",
+    "database": "coupons",
     "host": "localhost",
     "dialect": "postgres"
   },
   "production": {
     "username": "postgres",
-    "password": "postgresql",
-    "database": "coupon",
+    "password": "2343",
+    "database": "coupons",
     "host": "localhost",
     "dialect": "postgres"
   }

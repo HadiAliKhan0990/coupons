@@ -1,6 +1,6 @@
 const Coupon = require('../models/coupon');
 const { validationResult } = require('express-validator');
-const { HTTP_STATUS_CODE } = require('../utils/constants');
+const { HTTP_STATUS_CODE } = require('../utils/httpStatus')
 const QRCode = require('qrcode');
 
 const createCoupon = async (req, res) => {
