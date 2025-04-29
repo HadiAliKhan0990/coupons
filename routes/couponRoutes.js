@@ -9,6 +9,7 @@ const {
   deleteCoupon,
   claimCoupon,
   redeemCoupon,
+  getBusinessStats
 } = require('../controllers/couponController');
 
 const { couponValidations } = require('../validations/coupon');
@@ -26,6 +27,8 @@ router.delete('/:id', deleteCoupon);
 // Claim coupon
 router.post('/:id/claim', claimCoupon);
 // Redeem coupon
-router.post('/:id/redeem', redeemCoupon);
+router.post('/redeem', redeemCoupon);
+// Get business statistics
+router.get('/business/:companyName/stats', getBusinessStats);
 
 module.exports = router;
