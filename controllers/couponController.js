@@ -24,7 +24,7 @@ const createCoupon = async (req, res) => {
       product,
       description,
       totalAvailable,
-      expiryDate
+      expiryDate,
     } = req.body;
 
     // Generate a unique coupon code
