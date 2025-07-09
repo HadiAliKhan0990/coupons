@@ -29,6 +29,6 @@ router.post('/:id/claim', claimCoupon);
 // Redeem coupon
 router.post('/redeem', redeemCoupon);
 // Get business statistics
-router.get('/business/:companyName/stats', getBusinessStats);
+router.get('/business/:company_name/stats', getBusinessStats);
 
 module.exports = router;

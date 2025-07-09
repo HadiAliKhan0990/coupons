@@ -10,11 +10,11 @@ const generateCouponQRCode = async (couponData) => {
   try {
     // Extract only the necessary data for the QR code
     const qrPayload = {
-      couponCode: couponData.couponCode,
+      coupon_code: couponData.coupon_code,
       name: couponData.name,
-      companyName: couponData.companyName,
+      company_name: couponData.company_name,
       product: couponData.product,
-      expiryDate: couponData.expiryDate
+      expiry_date: couponData.expiry_date
     };
 
     // Encrypt the payload before generating QR code

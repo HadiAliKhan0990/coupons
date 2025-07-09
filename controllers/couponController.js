@@ -11,6 +11,7 @@ const generateCouponCode = () => {
   return crypto.randomBytes(8).toString('hex').toUpperCase();
 };
 
+// Create a new coupon
 const createCoupon = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -19,30 +20,30 @@ const createCoupon = async (req, res) => {
   try {
     const {
       name,
-      companyName,
-      couponType,
+      company_name,
+      coupon_type,
       product,
       description,
-      totalAvailable,
-      expiryDate,
+      total_available,
+      expiry_date
     } = req.body;
 
     // Generate a unique coupon code
-    const couponCode = generateCouponCode();
+    const coupon_code = generateCouponCode();
     
     // Create the coupon
     const newCoupon = await Coupon.create({
       name,
-      companyName,
-      couponType,
+      company_name,
+      coupon_type,
       product,
       description,
-      totalAvailable,
-      expiryDate,
-      couponCode,
-      status: 'available',
-      claimedCount: 0,
-      redeemedCount: 0
+      total_available,
+      expiry_date,
+      coupon_code,
+      status: 'AVAILABLE',
+      claimed_count: 0,
+      redeemed_count: 0
     });
 
     // Generate QR code for the coupon
@@ -70,9 +71,9 @@ const getAllCoupons = async (req, res) => {
     let where = {};
     if (onlyAvailable) {
       where = {
-        totalAvailable: { [Op.gt]: 0 },
-        expiryDate: { [Op.gt]: new Date() },
-        status: 'available'
+        total_available: { [Op.gt]: 0 },
+        expiry_date: { [Op.gt]: new Date() },
+        status: 'AVAILABLE'
       };
     }
     const coupons = await Coupon.findAll({ where });
@@ -129,9 +130,9 @@ const updateCoupon = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({ message: 'Coupon not found' });
     }
     await coupon.update(req.body);
-    res.status(HTTP_STATUS_CODE.OK).json({ message: 'Coupon updated', coupon });
+    return res.status(HTTP_STATUS_CODE.OK).json({ message: 'Coupon updated', coupon });
   } catch (error) {
-    res.status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR).json({ message: 'Error updating coupon' });
+    return res.status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR).json({ message: 'Error updating coupon' });
   }
 };
 
@@ -143,9 +144,9 @@ const deleteCoupon = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({ message: 'Coupon not found' });
     }
     await coupon.destroy();
-    res.status(HTTP_STATUS_CODE.OK).json({ message: 'Coupon deleted' });
+    return res.status(HTTP_STATUS_CODE.OK).json({ message: 'Coupon deleted' });
   } catch (error) {
-    res.status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR).json({ message: 'Error deleting coupon' });
+    return res.status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR).json({ message: 'Error deleting coupon' });
   }
 };
 
@@ -158,15 +159,15 @@ const claimCoupon = async (req, res) => {
     }
 
     // Check if coupon is available
-    if (coupon.status !== 'available') {
+    if (coupon.status !== 'AVAILABLE') {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({ 
         message: 'Coupon is not available for claiming' 
       });
     }
 
     // Check if coupon is expired
-    if (new Date(coupon.expiryDate) < new Date()) {
-      coupon.status = 'expired';
+    if (new Date(coupon.expiry_date) < new Date()) {
+      coupon.status = 'EXPIRED';
       await coupon.save();
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({ 
         message: 'Coupon has expired' 
@@ -174,14 +175,14 @@ const claimCoupon = async (req, res) => {
     }
 
     // Check if there are any coupons available to claim
-    if (coupon.totalAvailable <= coupon.claimedCount) {
+    if (coupon.total_available <= coupon.claimed_count) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({ 
         message: 'No more coupons available to claim' 
       });
     }
 
-    coupon.claimedCount += 1;
-    coupon.status = 'claimed';
+    coupon.claimed_count += 1;
+    coupon.status = 'CLAIMED';
     await coupon.save();
 
     // Generate QR code for the claimed coupon
@@ -205,15 +206,15 @@ const claimCoupon = async (req, res) => {
 // REDEEM coupon
 const redeemCoupon = async (req, res) => {
   try {
-    const { couponCode } = req.body;
+    const { coupon_code } = req.body;
     
-    if (!couponCode) {
+    if (!coupon_code) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         message: 'Please provide the coupon code'
       });
     }
 
-    const coupon = await Coupon.findOne({ where: { couponCode } });
+    const coupon = await Coupon.findOne({ where: { coupon_code } });
     if (!coupon) {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         message: 'Coupon not found'
@@ -221,15 +222,15 @@ const redeemCoupon = async (req, res) => {
     }
 
     // Check if coupon is already redeemed
-    if (coupon.status === 'redeemed') {
+    if (coupon.status === 'REDEEMED') {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         message: 'Coupon has already been redeemed'
       });
     }
 
     // Check if coupon is expired
-    if (new Date(coupon.expiryDate) < new Date()) {
-      coupon.status = 'expired';
+    if (new Date(coupon.expiry_date) < new Date()) {
+      coupon.status = 'EXPIRED';
       await coupon.save();
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         message: 'Coupon has expired'
@@ -237,14 +238,14 @@ const redeemCoupon = async (req, res) => {
     }
 
     // Check if coupon is claimed
-    if (coupon.status !== 'claimed') {
+    if (coupon.status !== 'CLAIMED') {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         message: 'Coupon must be claimed before redemption'
       });
     }
 
-    coupon.redeemedCount += 1;
-    coupon.status = 'redeemed';
+    coupon.redeemed_count += 1;
+    coupon.status = 'REDEEMED';
     await coupon.save();
 
     // Generate QR code for the redeemed coupon
@@ -268,14 +269,14 @@ const redeemCoupon = async (req, res) => {
 // Get business statistics
 const getBusinessStats = async (req, res) => {
   try {
-    const { companyName } = req.params;
+    const { company_name } = req.params;
     
     const stats = await Coupon.findAll({
-      where: { companyName },
+      where: { company_name },
       attributes: [
-        [sequelize.fn('COUNT', sequelize.col('id')), 'totalCoupons'],
-        [sequelize.fn('SUM', sequelize.col('claimedCount')), 'totalClaimed'],
-        [sequelize.fn('SUM', sequelize.col('redeemedCount')), 'totalRedeemed'],
+        [sequelize.fn('COUNT', sequelize.col('id')), 'total_coupons'],
+        [sequelize.fn('SUM', sequelize.col('claimed_count')), 'total_claimed'],
+        [sequelize.fn('SUM', sequelize.col('redeemed_count')), 'total_redeemed'],
       ],
       raw: true
     });
