@@ -61,7 +61,7 @@ const Coupon = sequelize.define('Coupon', {
         defaultValue: true,
     },
     qr_code: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         defaultValue: null
     }
 }, {
