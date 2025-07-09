@@ -60,6 +60,10 @@ const Coupon = sequelize.define('Coupon', {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
     },
+    qr_code: {
+        type: DataTypes.STRING,
+        defaultValue: null
+    }
 }, {
     tableName: 'coupon',
     timestamps: true,
