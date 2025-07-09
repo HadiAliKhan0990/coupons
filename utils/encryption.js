@@ -1,4 +1,5 @@
 const CryptoJS = require('crypto-js');
+require('dotenv').config();
 
 // You should store this in environment variables in production
 const SECRET_KEY = process.env.ENCRYPTION_KEY;
