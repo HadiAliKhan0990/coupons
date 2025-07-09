@@ -13,7 +13,7 @@ const routes = require('./routes/routes');
 const qrCodeRoutes = require('./routes/qrCodeRoutes');
 
 app.use('/api', routes);
-app.use('/api/qrcode', qrCodeRoutes);
+app.use('/api/coupon/qrCode', qrCodeRoutes);
 
 const PORT = process.env.PORT || 3000;
 
