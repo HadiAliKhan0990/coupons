@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { verifyToken, requireAdmin } = require('../middlewares/authMiddleware');
 
 const {
   createCoupon,
@@ -15,20 +16,20 @@ const {
 const { couponValidations } = require('../validations/coupon');
 
 // Create coupon
-router.post('/', couponValidations, createCoupon);
+router.post('/', verifyToken, requireAdmin, couponValidations, createCoupon);
 // Get all coupons
-router.get('/', getAllCoupons);
+router.get('/', verifyToken, requireAdmin, getAllCoupons);
 // Get single coupon
-router.get('/:id', getCoupon);
+router.get('/:id', verifyToken, requireAdmin,getCoupon);
 // Update coupon
-router.put('/:id', couponValidations, updateCoupon);
+router.put('/:id', verifyToken, requireAdmin, couponValidations, updateCoupon);
 // Delete coupon
-router.delete('/:id', deleteCoupon);
+router.delete('/:id', verifyToken, requireAdmin, deleteCoupon);
 // Claim coupon
-router.post('/:id/claim', claimCoupon);
+router.post('/:id/claim', verifyToken,claimCoupon);
 // Redeem coupon
-router.post('/redeem', redeemCoupon);
+router.post('/redeem', verifyToken, redeemCoupon);
 // Get business statistics
-router.get('/business/:company_name/stats', getBusinessStats);
+router.get('/business/:company_name/stats', verifyToken, requireAdmin, getBusinessStats);
 
 module.exports = router;
