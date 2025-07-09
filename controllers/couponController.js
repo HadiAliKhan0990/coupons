@@ -47,17 +47,14 @@ const createCoupon = async (req, res) => {
 
     // Generate QR code for the coupon
     const qrCode = await generateCouponQRCode(newCoupon);
-    
+
     newCoupon.qr_code = qrCode;
     await newCoupon.save();
 
     // Return the coupon with the QR code
     res.status(HTTP_STATUS_CODE.CREATED).json({
       message: 'Coupon created successfully',
-      coupon: {
-        ...newCoupon.toJSON(),
-        qrCode
-      }
+      newCoupon
     });
   } catch (error) {
     console.error('Error creating coupon:', error);
