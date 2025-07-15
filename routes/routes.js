@@ -7,6 +7,6 @@ router.get('/test', (req, res) => {
   res.status(200).json({ message: 'API is working!' });
 });
 
-router.use('/coupon', couponRoutes);
+router.use('api/coupon', couponRoutes);
 
 module.exports = router;
