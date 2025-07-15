@@ -2,9 +2,20 @@ const express = require('express');
 const app = express();
 require('./connection/db');
 const dotenv = require('dotenv');
+const cors = require('cors');
 dotenv.config();
 
+// CORS Configuration
+const corsOptions = {
+  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
 // Middleware
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -53,7 +64,7 @@ app.get('/view-qr', (req, res) => {
   `);
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3004;
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

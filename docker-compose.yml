@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  coupon-service:
+    build: .
+    container_name: coupon-service
+    restart: unless-stopped
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=production
+      - PORT=3004
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+

@@ -18,9 +18,9 @@ const { couponValidations } = require('../validations/coupon');
 // Create coupon
 router.post('/', verifyToken, requireAdmin, couponValidations, createCoupon);
 // Get all coupons
-router.get('/', verifyToken, requireAdmin, getAllCoupons);
+router.get('/', verifyToken, getAllCoupons);
 // Get single coupon
-router.get('/:id', verifyToken, requireAdmin,getCoupon);
+router.get('/:id', verifyToken, getCoupon);
 // Update coupon
 router.put('/:id', verifyToken, requireAdmin, couponValidations, updateCoupon);
 // Delete coupon

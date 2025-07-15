@@ -68,14 +68,19 @@ const createCoupon = async (req, res) => {
 const getAllCoupons = async (req, res) => {
   try {
     const onlyAvailable = req.query.available === 'true';
-    let where = {};
-    if (onlyAvailable) {
-      where = {
-        total_available: { [Op.gt]: 0 },
-        expiry_date: { [Op.gt]: new Date() },
-        status: 'AVAILABLE'
-      };
+    const companyName = req.query.company_name?.trim();
+    const where = {};
+
+    if (companyName) {
+      where.company_name = companyName;
     }
+
+    if (onlyAvailable) {
+      where.total_available = { [Op.gt]: 0 };
+      where.expiry_date = { [Op.gt]: new Date() };
+      where.status = 'AVAILABLE';
+    }
+
     const coupons = await Coupon.findAll({ where });
     
     // Generate QR codes for all coupons
